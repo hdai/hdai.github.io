@@ -6,29 +6,21 @@
   <link rel="stylesheet" href="static/lib/css/style.css">
   <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="static/lib/js/jquery.min.js"></script>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script>
 
-    // $.ajax({
-    //   url: "/blog",
-    //   success: function(data){
-    //      $(data).find("a:contains(.html)").each(function(){
-    //         var blogpost = $(this).attr("href");
-    //
-    //         $.get("blog/" + blogpost, function(result){
-    //           $("#content").prepend(result);
-    //      });
-    //    });
-    //  }
-    // });
+    $(function(){
+        $.get('blog/blogpost.txt', function(data){
+            var blogpost = data.split('\n');
 
-    var blogpost = ['1_aapl_bbry.html', '2_textbook_prices.html', '3_shark_attack.html', '4_running_2017.html', '5_steph_curry.html'];
+          for (var i in blogpost) {
+              $.get("blog/" + blogpost[i], function(result){
+              $("#content").prepend(result);
+          })};
 
-    for (var i in blogpost) {
-      $.get("blog/" + blogpost[i], function(result){
-      $("#content").prepend(result);
-  })};
+        });
+    });
 
   </script>
 </head>

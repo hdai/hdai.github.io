@@ -1,0 +1,5 @@
+1_aapl_bbry.html
+2_textbook_prices.html
+3_shark_attack.html
+4_running_2017.html
+5_steph_curry.html
