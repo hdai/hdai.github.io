@@ -10,18 +10,25 @@
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script>
 
-    $.ajax({
-      url: "blog/",
-      success: function(data){
-         $(data).find("a:contains(.html)").each(function(){
-            var blogpost = $(this).attr("href");
+    // $.ajax({
+    //   url: "/blog",
+    //   success: function(data){
+    //      $(data).find("a:contains(.html)").each(function(){
+    //         var blogpost = $(this).attr("href");
+    //
+    //         $.get("blog/" + blogpost, function(result){
+    //           $("#content").prepend(result);
+    //      });
+    //    });
+    //  }
+    // });
 
-            $.get("blog/" + blogpost, function(result){
-              $("#content").prepend(result);
-         });
-       });
-     }
-    });
+    var blogpost = ['1_aapl_bbry.html', '2_textbook_prices.html', '3_shark_attack.html', '4_running_2017.html', '5_steph_curry.html'];
+
+    for (var i in blogpost) {
+      $.get("blog/" + blogpost[i], function(result){
+      $("#content").prepend(result);
+  })};
 
   </script>
 </head>
