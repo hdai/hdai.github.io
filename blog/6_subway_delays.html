@@ -1,0 +1,118 @@
+<h1 id="viz">Viz: TTC Subway delays</h1>
+<div id="d3"></div>
+
+<script>
+
+    var margin = {top: 20, right: 15, bottom: 60, left: 60}
+      , width = 700 - margin.left - margin.right
+      , height = 600 - margin.top - margin.bottom;
+
+    // load data
+    d3.csv("blog/data/subway_delays.csv", function(error, data) {
+
+      // change string (from CSV) into number format
+      data.forEach(function(d) {
+        d.Line = +d.Line;
+        d.X_val = +d.X_val;
+        d.Y_val = +d.Y_val;
+        d.count_delay = +d.count_delay;
+        d.sum_mins_delay = +d.sum_mins_delay;
+
+      });
+
+    console.log(data);
+
+    var x = d3.scale.linear()
+              .range([ 0, width ]);
+
+    var y = d3.scale.linear()
+    	      .range([ height, 0 ]);
+
+    var r = d3.scale.linear()
+            .range([3, 12]);
+
+    var xAxis = d3.svg.axis()
+                  .scale(x)
+                  .orient('bottom');
+
+
+    var yAxis = d3.svg.axis()
+                  .scale(y)
+                  .orient('left');
+
+    x.domain([d3.min(data, function(d) { return d.X_val; }) - 5, d3.max(data, function(d) { return d.X_val; }) + 5]);
+    y.domain([d3.min(data, function(d) { return d.Y_val; }) - 5, d3.max(data, function(d) { return d.Y_val; }) + 5]);
+    r.domain(d3.extent (data, function (d)  {return d.sum_mins_delay;}));
+
+
+    // setup fill color
+    var cValue = function(d) { return d.Line;};
+
+    var color = d3.scale.ordinal()
+      .range(["#f8c303", "#01923f", "#0092dc", "#964378", "#A9A9A9"]);
+
+    var svg = d3.select('#d3').append("svg")
+                	.attr('width', width + margin.right + margin.left)
+                	.attr('height', height + margin.top + margin.bottom)
+                  .append('g')
+                  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .html(function(d) {
+            return "<div>Station: <span style='color:white'>" + d.Station + "</span></div>" +
+                   "<div><span>Mins delayed:</span> <span style='color:white'>" + d.sum_mins_delay.toLocaleString('en', {useGrouping:true}) + "</span></div>" +
+                   "<div><span>Num delays:</span> <span style='color:white'>" + d.count_delay.toLocaleString('en', {useGrouping:true}) + "</span></div>";
+            })
+
+    svg.call(tip);
+
+    svg.selectAll(".dot")
+      .data(data)
+      .enter().append("circle")
+      .attr("class","dot")
+      .attr("r",  function(d) { return r(d.sum_mins_delay); })
+      .attr("cx", function(d) { return x(d.X_val); })
+      .attr("cy", function(d) { return y(d.Y_val); })
+      .style("fill", function(d) { return color(cValue(d));})
+      .style("stroke", 'none')
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+
+      var legend = svg.selectAll(".legend")
+          .data(color.domain())
+          .enter().append("g")
+          .attr("class", "legend")
+          .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+      legend.append("rect")
+            .attr("x", width - 18)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", color);
+
+      var legendvalue = function(d) { if (d !== 5) {return "Line " + d ; }
+                                      else {return "Unknown" ; }};
+
+
+      legend.append("text")
+            .attr("x", width - 24)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(legendvalue);
+
+});
+</script>
+
+<div style="text-align: right;">
+  <a href="https://www.toronto.ca/city-government/data-research-maps/open-data/open-data-catalogue/#917dd033-1fe5-4ba8-04ca-f683eec89761" style="text-align:right;">
+    Data source: Open Data Toronto/Toronto Transit Commission
+  </a>
+</div>
+
+<p>
+  Notes: Data is from January 2014 to November 2017.
+</p>
+<br>

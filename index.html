@@ -4,15 +4,19 @@
 <head>
   <title>Daidaviz</title>
   <link rel="stylesheet" href="static/lib/css/style.css">
+  <link rel="stylesheet" href="static/lib/css/d3_charts.css">
   <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
   <script src="static/lib/js/jquery.min.js"></script>
   <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
   <script>
 
     $(function(){
         $.get('blog/blogpost.txt', function(data){
             var blogpost = data.split('\n');
+
 
           for (var i in blogpost) {
               $.get("blog/" + blogpost[i], function(result){
@@ -26,7 +30,7 @@
 </head>
 
 <body>
-  <div class="center-page">
+<div class="center-page">
 
       <header>
         <h1>daidaviz</h1>
@@ -35,9 +39,9 @@
 
       <br>
       <br>
+
       <div id="content"></div>
 
-  </div>
-
+</div>
 </body>
 </html>
