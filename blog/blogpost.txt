@@ -1,6 +1,7 @@
-1_aapl_bbry.html
-2_textbook_prices.html
-3_shark_attack.html
-4_running_2017.html
-5_steph_curry.html
-6_subway_delays.html
+aapl_bbry.html
+textbook_prices.html
+shark_attack.html
+running_2017.html
+steph_curry.html
+subway_delays.html
+kickstarter_projects.html

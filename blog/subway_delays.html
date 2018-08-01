@@ -1,4 +1,4 @@
-<h1 id="viz">Viz: TTC Subway delays</h1>
+<h1 id="viz">Viz: TTC Subway Delays by Station</h1>
 <div id="d3"></div>
 
 <script>
@@ -19,8 +19,6 @@
         d.sum_mins_delay = +d.sum_mins_delay;
 
       });
-
-    console.log(data);
 
     var x = d3.scale.linear()
               .range([ 0, width ]);
@@ -108,11 +106,13 @@
 
 <div style="text-align: right;">
   <a href="https://www.toronto.ca/city-government/data-research-maps/open-data/open-data-catalogue/#917dd033-1fe5-4ba8-04ca-f683eec89761" style="text-align:right;">
-    Data source: Open Data Toronto/Toronto Transit Commission
+    Data source: Open Data Toronto
   </a>
 </div>
 
 <p>
-  Notes: Data is from January 2014 to November 2017.
+  Notes: Delays occured between January 2014 to November 2017. The dataset was not very clean
+  and sometimes the station name of a delay was not obvious. These delays are categorized
+  as "unknown".
 </p>
 <br>

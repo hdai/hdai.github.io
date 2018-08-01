@@ -1,0 +1,128 @@
+<h1 id="viz">Viz: Successfully Funded Kickstarter Projects by Category</h1>
+<div id="d4"></div>
+
+<script>
+var margin = {top: 20, right: 15, bottom: 60, left: 60}
+  , width = 700 - margin.left - margin.right
+  , height = 600 - margin.top - margin.bottom;
+
+// load data
+d3.csv("blog/data/kickstarter_projects.csv", function(error, data) {
+
+  // change string (from CSV) into number format
+  data.forEach(function(d) {
+    d.usd_goal_real = +d.usd_goal_real;
+    d.overfunded_amt = +d.overfunded_amt;
+    d.overfunded_count = +d.overfunded_count;
+    d.project_count = +d.project_count;
+    d.pct_project_overfunded = +d.pct_project_overfunded;
+  });
+
+  var x = d3.scale.linear()
+            .range([ 0, width ]);
+
+  var y = d3.scale.linear()
+            .range([ height, 0 ]);
+
+  var r = d3.scale.linear()
+            .range([3, 12]);
+
+  var formatSuffix = d3.format("s");
+  var formatSuffixDecimal1 = d3.format(".1s");
+
+  var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient('bottom')
+                .tickFormat(formatSuffix);
+
+  var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient('left')
+                .tickFormat(formatSuffix);
+
+  x.domain([d3.min(data, function(d) { return d.overfunded_amt; }), d3.max(data, function(d) { return d.overfunded_amt; })]);
+  y.domain([d3.min(data, function(d) { return d.usd_goal_real; }) - 1, d3.max(data, function(d) { return d.usd_goal_real; }) + 1]);
+  r.domain(d3.extent (data, function (d)  {return d.main_category;}));
+
+  // add the graph canvas to the body of the webpage
+  var svg = d3.select('#d4').append("svg")
+              .attr('width', width + margin.right + margin.left)
+              .attr('height', height + margin.top + margin.bottom)
+              .append('g')
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var tip = d3.tip()
+              .attr('class', 'd3-tip')
+              .offset([-10, 0])
+              .html(function(d) {
+              return "<div><span style='color:white'>" + d.main_category + "</span></div>" +
+                     "<div>" + formatSuffixDecimal1(d.project_count) + " successful projects</div>" +
+                     "<div>" + d.pct_project_overfunded + "% projects overfunded</div>";
+                   });
+  svg.call(tip);
+
+  // x-axis
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+      .append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("average amount overfunded (USD)");
+
+  // y-axis
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+      .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("average goal (USD)");
+
+
+  var outliers = ["Technology","Games","Design","Fashion"]
+
+  // draw dots
+  svg.selectAll(".dot")
+      .data(data)
+    .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", 10)
+      .attr("cx", function(d) { return x(d.overfunded_amt); })
+      .attr("cy", function(d) { return y(d.usd_goal_real); })
+      .style("fill", function(d) {
+            if (outliers.indexOf(d.main_category) >=0) {return "#034752"}
+            else 	{ return "#282828" }
+          ;})
+      .style("stroke", 'none')
+      .style("opacity", 0.7)
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+
+});
+
+
+      // 037362 034752
+</script>
+
+<div style="text-align: right;">
+  <a href="https://www.kaggle.com/kemical/kickstarter-projects" style="text-align:right;">
+    Data source: Kaggle
+  </a>
+</div>
+
+<p>
+  Notes: Original dataset includes over 378K Kickstarter projects and roughly a third of
+  them were successfully funded. Each project falls into one of fifteen categories
+  (as shown as dots in the plot). Four of those categories (technology, games, design,
+  and fashion) on average, have a higher amount of overfunding (the amount raised above
+  the goal) than the original goal of the project.
+
+</p>
+<br>
