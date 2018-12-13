@@ -8,16 +8,16 @@
       , height = 600 - margin.top - margin.bottom;
 
     // load data
-    d3.csv("blog/data/subway_delays.csv", function(error, data) {
+    d3.csv("blog/data/subway_delay2.csv", function(error, data) {
 
       // change string (from CSV) into number format
       data.forEach(function(d) {
         d.Line = +d.Line;
         d.X_val = +d.X_val;
         d.Y_val = +d.Y_val;
-        d.count_delay = +d.count_delay;
+        d.delays_per_week = +d.delays_per_week;
+        d.mins_delayed_per_week = +d.mins_delayed_per_week;
         d.sum_mins_delay = +d.sum_mins_delay;
-
       });
 
     var x = d3.scale.linear()
@@ -59,9 +59,9 @@
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
                 .html(function(d) {
-            return "<div>Station: <span style='color:white'>" + d.Station + "</span></div>" +
-                   "<div><span>Mins delayed:</span> <span style='color:white'>" + d.sum_mins_delay.toLocaleString('en', {useGrouping:true}) + "</span></div>" +
-                   "<div><span>Num delays:</span> <span style='color:white'>" + d.count_delay.toLocaleString('en', {useGrouping:true}) + "</span></div>";
+            return "<div><span style='color:white'>" + d.Station + "</span></div>" +
+                   "<div><span style='color:white'>" + d3.round(d.mins_delayed_per_week) + " </span><span>mins of delays per week</span></div>" +
+                   "<div><span style='color:white'>" + d3.round(d.delays_per_week) + " </span><span>delays per week</span> </div>";
             })
 
     svg.call(tip);
