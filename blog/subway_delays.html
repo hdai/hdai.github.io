@@ -8,7 +8,7 @@
       , height = 600 - margin.top - margin.bottom;
 
     // load data
-    d3.csv("blog/data/subway_delay2.csv", function(error, data) {
+    d3.csv("blog/data/subway_delays.csv", function(error, data) {
 
       // change string (from CSV) into number format
       data.forEach(function(d) {
