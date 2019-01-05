@@ -5,3 +5,4 @@ running_2017.html
 steph_curry.html
 subway_delays.html
 kickstarter_projects.html
+spotify_streams.html

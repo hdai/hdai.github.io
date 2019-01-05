@@ -1,0 +1,140 @@
+<h1 id="viz">My Spotify Streaming Habits</h1>
+<div id="d5"></div>
+
+<script>
+
+    var margin = {top: 30, right: 15, bottom: 60, left: 60}
+      , width = 700 - margin.left - margin.right
+      , height = 700 - margin.top - margin.bottom
+      , gridSize = Math.floor(width / 24)
+      , cellSize = gridSize - 1;
+
+    // load data
+    d3.csv("blog/data/spotify_streaming_habits.csv", function(error, data) {
+
+      // change string (from CSV) into number format
+      data.forEach(function(d) {
+        d.day_of_week = +d.day_of_week;
+        d.hour_of_day = +d.hour_of_day;
+        d.mPlayed = +d.mPlayed;
+      });
+
+      var x_elements = d3.set(data.map(function( d ) { return d.day_of_week; } )).values(),
+          y_elements = d3.set(data.map(function( d ) { return d.hour_of_day; } )).values();
+
+      var colorDomain = d3.extent(data, function(d){ return d.mPlayed; });
+
+      var day_dict = {0: "Monday",
+                      1: "Tuesday",
+                      2: "Wednesday",
+                      3: "Thursday",
+                      4: "Friday",
+                      5: "Saturday",
+                      6: "Sunday"}
+
+      var hour_conversion = function(d) { if (d == 0) {return "12am";}
+                                          else if (d >= 1 && d<= 11) {return d + "am";}
+                                          else if (d == 12) {return d + "pm";}
+                                          else {return d-12 + "pm";}
+                                        };
+
+      var xScale = d3.scale.ordinal()
+                     .domain(x_elements)
+                     .rangeBands([0, x_elements.length * gridSize]);
+
+      var xAxis = d3.svg.axis()
+                    .scale(xScale)
+                    .tickFormat(function (d){ return day_dict[d].substring(0,2);})
+                    .orient("top")
+                    .outerTickSize(0)
+                    .tickSize(0);
+
+      var yScale = d3.scale.ordinal()
+                        .domain(y_elements)
+                        .rangeBands([0, y_elements.length * gridSize])
+                        ;
+
+      var yAxis = d3.svg.axis()
+                    .scale(yScale)
+                    .tickFormat(function (d){ return hour_conversion(d);})
+                    .orient("left")
+                    .outerTickSize(0)
+                    .tickSize(0);
+
+
+      var colorScale = d3.scale.linear()
+                         .domain(colorDomain)
+                         .range(["#e8f8ed","#1db954"]);
+
+      var svg = d3.select('#d5').append("svg")
+                                .attr('width', width + margin.right + margin.left)
+                                .attr('height', height + margin.top + margin.bottom)
+                                .append('g')
+                                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      svg.selectAll(".heatmap")
+         .append("svg")
+         .attr("width", 400)
+         .attr("height", 200);
+
+
+      var tip = d3.tip()
+                  .attr('class', 'd3-tip')
+                  .offset([-10, 0])
+                  .html(function(d) {
+                       return "<div>" + hour_conversion(d.hour_of_day) + " on " + day_dict[d.day_of_week] + "</div>" +
+                              "<div><span style='color:white'>" + d.mPlayed + " </span><span>mins of streaming</span></div>";
+                       });
+
+      svg.call(tip);
+
+      var rectangles = svg.selectAll("rect")
+                          .data(data)
+                          .enter()
+                          .append("rect");
+
+      rectangles.attr("x", function(d){return xScale(d.day_of_week);})
+                .attr("y", function(d){return yScale(d.hour_of_day);})
+                .attr("width", cellSize)
+                .attr("height", cellSize)
+                .style("fill", function(d){return colorScale(d.mPlayed);})
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide);
+
+      svg.append("g")
+         .attr("class", "x axis")
+         .call(xAxis)
+            .selectAll('text').attr('font-weight', 'normal')
+            .style("text-anchor", "middle")
+            .style("fill", "#D3D3D3")
+            .attr("dx", ".8em")
+            .attr("dy", ".5em")
+            .attr("transform", "translate(-12," + -10 + ")");
+
+      //remove x axis line
+      svg.select(".domain").remove();
+
+      svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis)
+          .style("fill", "#D3D3D3")
+          .append("text")
+          .attr("class", "label")
+          .attr("transform", "rotate(-90)");
+
+      //remove y axis line
+      svg.select(".domain").remove();
+
+});
+</script>
+
+<div style="text-align: right;">
+  <a href="https://www.spotify.com/" style="text-align:right;">
+    Data source: Spotify
+  </a>
+</div>
+
+<p>
+  Notes: Spotify data is from September 20 to December 19, 2018.
+</p>
+<br>
